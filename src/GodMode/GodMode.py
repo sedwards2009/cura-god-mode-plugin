@@ -1,9 +1,7 @@
 # Copyright (c) 2016 Ultimaker B.V.
 # Cura is released under the terms of the AGPLv3 or higher.
 from UM.Settings import SettingDefinition
-from UM.i18n import i18nCatalog
 from UM.Extension import Extension
-from UM.Preferences import Preferences
 from UM.Application import Application
 from UM.Settings.ContainerRegistry import ContainerRegistry
 
@@ -23,19 +21,46 @@ class GodMode(Extension, QObject):
         QObject.__init__(self, parent)
         Extension.__init__(self)
 
-        self.addMenuItem("View Active Stack", self.viewAll)
+        self.addMenuItem("View Active Stack", viewAll)
+        self.addMenuItem("View All Machines", viewAllMachines)
+        self.addMenuItem("View All Materials", viewAllMaterials)
+        self.addMenuItem("View All Qualities", viewAllQualities)
+        self.addMenuItem("View All Quality Changes", viewAllQualityChanges)
+        self.addMenuItem("View All User Containers", viewAllUserContainers)
+        self.addMenuItem("View All Variants", viewAllVariants)
 
-    def viewAll(self):
-        target = os.path.join(tempfile.gettempdir(), "cura_settings.html")
-        with open(target, "w", encoding="utf8") as fhandle:
-            fhandle.write(htmlPage())
-        QDesktopServices.openUrl(QUrl.fromLocalFile(target))
+def viewAll():
+    openHtmlPage("cura_settings.html", htmlPage())
 
-def getHtmlHeader():
+def viewAllMaterials():
+    openHtmlPage("cura_materials.html", containersOfTypeHtmlPage("Materials", "material"))
+
+def viewAllUserContainers():
+    openHtmlPage("cura_user_containers.html", containersOfTypeHtmlPage("User Containers", "user"))
+
+def viewAllVariants():
+    openHtmlPage("cura_variants.html", containersOfTypeHtmlPage("Variants", "variant"))
+
+def viewAllQualities():
+    openHtmlPage("cura_qualities.html", containersOfTypeHtmlPage("Quality", "quality"))
+
+def viewAllQualityChanges():
+    openHtmlPage("cura_quality_changes.html", containersOfTypeHtmlPage("Quality Changes", "quality_changes"))
+
+def viewAllMachines():
+    openHtmlPage("cura_machines.html", containersOfTypeHtmlPage("Machines", "machine"))
+
+def openHtmlPage(page_name, html_contents):
+    target = os.path.join(tempfile.gettempdir(), page_name)
+    with open(target, "w", encoding="utf8") as fhandle:
+        fhandle.write(html_contents)
+    QDesktopServices.openUrl(QUrl.fromLocalFile(target))
+
+def getHtmlHeader(page_name="Cura Settings"):
     return """<!DOCTYPE html><html>
 <head>
 <meta charset="UTF-8">
-<title>Cura Settings</title>
+<title>""" + encode(page_name) + """</title>
 <script>
 """ + keyFilterJS() + """
 </script>
@@ -60,6 +85,9 @@ div.menu {
   left: 0px;
   width: 25em;
   top: 0px;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: auto;
 }
 
 div.contents {
@@ -158,13 +186,34 @@ def htmlPage():
 
     html += formatExtruderStacks()
 
-    # html += formatAllDefinitionContainers()
-
     html += "</div>"
 
     html += htmlFooter
     return html
 
+def containersOfTypeHtmlPage(name, type_):
+    html = getHtmlHeader(name)
+
+    html += "<div class='menu'>\n"
+    html += "<ul>"
+    if type_ == "machine":
+        containers = ContainerRegistry.getInstance().findDefinitionContainers()
+    else:
+        containers = ContainerRegistry.getInstance().findInstanceContainers(type=type_)
+    containers.sort(key=lambda x: x.getId())
+    for container in containers:
+        html += "<li><a href='#"+ str(id(container)) + "'>"+encode(container.getId())+"</a></li>\n"
+    html += "</ul>"
+
+    html += keyFilterWidget()
+    html += "</div>"
+
+    html += "<div class='contents'>"
+    html += formatAllContainersOfType(name, type_)
+    html += "</div>"
+
+    html += htmlFooter
+    return html
 
 def formatExtruderStacks():
     html = ""
@@ -187,12 +236,17 @@ def formatExtruderStacksMenu():
     html += "</ul>"
     return html
 
-def formatAllDefinitionContainers():
-    html = "<h2>Definition Containers</h2>\n"
-    containers = ContainerRegistry.getInstance().findDefinitionContainers()
+def formatAllContainersOfType(name, type_):
+    html = "<h2>" + name + "</h2>\n"
+
+    if type_ == "machine":
+        containers = ContainerRegistry.getInstance().findDefinitionContainers()
+    else:
+        containers = ContainerRegistry.getInstance().findInstanceContainers(type=type_)
+
     containers.sort(key=lambda x: x.getId())
-    for def_container in containers:
-        html += formatContainer(def_container)
+    for container in containers:
+        html += formatContainer(container)
     return html
 
 def formatContainerStack(stack):
