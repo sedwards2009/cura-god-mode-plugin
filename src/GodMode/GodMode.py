@@ -29,6 +29,7 @@ class GodMode(Extension, QObject):
         self.addMenuItem("View All Quality Changes", viewAllQualityChanges)
         self.addMenuItem("View All User Containers", viewAllUserContainers)
         self.addMenuItem("View All Variants", viewAllVariants)
+        self.addMenuItem("View All Stacks", viewAllStacks)
 
 def viewAll():
     openHtmlPage("cura_settings.html", htmlPage())
@@ -50,6 +51,9 @@ def viewAllQualityChanges():
 
 def viewAllMachines():
     openHtmlPage("cura_machines.html", containersOfTypeHtmlPage("Machines", "machine"))
+
+def viewAllStacks():
+    openHtmlPage("cura_stacks.html", allStacksHtmlPage());
 
 def openHtmlPage(page_name, html_contents):
     target = os.path.join(tempfile.gettempdir(), page_name)
@@ -217,6 +221,27 @@ def containersOfTypeHtmlPage(name, type_):
     html += htmlFooter
     return html
 
+def allStacksHtmlPage():
+    html = getHtmlHeader("All Stacks")
+
+    html += "<div class='menu'>\n"
+    html += "<ul>"
+    stacks = ContainerRegistry.getInstance().findContainerStacks()
+    stacks.sort(key=lambda x: x.getId())
+    for container in stacks:
+        html += "<li><a href='#"+ str(id(container)) + "'>"+encode(container.getId())+"</a></li>\n"
+    html += "</ul>"
+    html += keyFilterWidget()
+    html += "</div>"
+
+    html += "<div class='contents'>"
+    for stack in stacks:
+        html += formatContainerStack(stack, show_stack_keys=False)
+    html += "</div>"
+
+    html += htmlFooter
+    return html
+
 def formatExtruderStacks():
     html = ""
     html += "<h2 id='extruder_stacks'>Extruder Stacks</h2>"
@@ -251,13 +276,13 @@ def formatAllContainersOfType(name, type_):
         html += formatContainer(container)
     return html
 
-def formatContainerStack(stack):
+def formatContainerStack(stack, show_stack_keys=True):
     html = "<div class='container_stack'>\n"
     html += formatContainer(stack, name="Container Stack", short_value_properties=True)
     html += "<div class='container_stack_containers'>\n"
     html += "<h3>Containers</h3>\n"
     for container in stack.getContainers():
-        html += formatContainer(container)
+        html += formatContainer(container, show_keys=show_stack_keys)
     html += "</div>\n"
     html += "</div>\n"
     return html
@@ -277,19 +302,20 @@ def formatContainerMetaDataOnly(container):
     html += tableFooter()
     return html
 
-def formatContainer(container, name="Container", short_value_properties=False):
+def formatContainer(container, name="Container", short_value_properties=False, show_keys=True):
     html = ""
     html += "<a id='" + str(id(container)) + "' ></a>"
     html += tableHeader(name + ": " + safeCall(container.getId))
     html += formatContainerMetaDataRows(container)
 
-    key_properties = ["value", "resolve"] if short_value_properties else setting_prop_names
+    if show_keys:
+        key_properties = ["value", "resolve"] if short_value_properties else setting_prop_names
 
-    if hasattr(container, "getAllKeys"):
-        keys = list(container.getAllKeys())
-        keys.sort()
-        for key in keys:
-            html += formatSettingsKeyTableRow(key, formatSettingValue(container, key, key_properties))
+        if hasattr(container, "getAllKeys"):
+            keys = list(container.getAllKeys())
+            keys.sort()
+            for key in keys:
+                html += formatSettingsKeyTableRow(key, formatSettingValue(container, key, key_properties))
 
     html += tableFooter()
     return html
@@ -342,6 +368,9 @@ def formatKeyValueTableRow(key, value, extra_class=""):
 
     if isinstance(value, RawHtml):
         formatted_value = value.value
+    elif isinstance(value, dict):
+        formatted_value = encode(json.dumps(value, sort_keys=True, indent=4))
+        clazz += " preformat"
     else:
         formatted_value = encode(str(value))
 
@@ -359,9 +388,6 @@ def formatSettingsKeyTableRow(key, value):
 
     if isinstance(value, RawHtml):
         formatted_value = value.value
-    elif isinstance(value, dict):
-        formatted_value = encode(json.dumps(value, sort_keys=True, indent=4))
-        clazz += " preformat"
     else:
         formatted_value = encode(str(value))
 
