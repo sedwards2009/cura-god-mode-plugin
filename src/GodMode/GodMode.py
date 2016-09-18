@@ -11,6 +11,7 @@ from PyQt5.QtGui import QDesktopServices
 import os.path
 import tempfile
 import html
+import json
 
 from cura.Settings import ExtruderManager
 
@@ -131,7 +132,8 @@ table.key_value_table td.key {
   font-weight: bold;
 }
 
-table.key_value_table td.value {
+table.key_value_table tr.preformat td.value {
+  white-space: pre;
 }
 
 div.container_stack {
@@ -357,6 +359,9 @@ def formatSettingsKeyTableRow(key, value):
 
     if isinstance(value, RawHtml):
         formatted_value = value.value
+    elif isinstance(value, dict):
+        formatted_value = encode(json.dumps(value, sort_keys=True, indent=4))
+        clazz += " preformat"
     else:
         formatted_value = encode(str(value))
 
