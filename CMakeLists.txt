@@ -9,5 +9,4 @@ install(FILES
 
 install(DIRECTORY src/GodMode
         DESTINATION lib/cura/plugins
-        PATTERN "ExampleScript.py")
-
+        PATTERN)
