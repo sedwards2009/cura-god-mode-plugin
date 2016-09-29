@@ -1,5 +1,6 @@
 # Copyright (c) 2016 Ultimaker B.V.
 # Cura is released under the terms of the AGPLv3 or higher.
+from UM.Settings import DefinitionContainer
 from UM.Settings import SettingDefinition
 from UM.Extension import Extension
 from UM.Application import Application
@@ -374,6 +375,8 @@ def formatKeyValueTableRow(key, value, extra_class=""):
     elif isinstance(value, dict):
         formatted_value = encode(json.dumps(value, sort_keys=True, indent=4))
         clazz += " preformat"
+    elif isinstance(value, DefinitionContainer):
+        formatted_value = encode(value.getId() + " " + str(value))
     else:
         formatted_value = encode(str(value))
 
