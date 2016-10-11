@@ -1,17 +1,14 @@
 # Copyright (c) 2016 Ultimaker B.V.
 # This code is released under the terms of the AGPLv3 or higher.
-from UM.Resources import Resources
-
-from UM.View.View import View
-from UM.View.GL.OpenGL import OpenGL
-from UM.View.Renderer import Renderer
-
-from UM.Scene.Iterator.DepthFirstIterator import DepthFirstIterator
-
-from UM.Mesh.MeshBuilder import MeshBuilder
-
 from UM.Math.Color import Color
 from UM.Math.Vector import Vector
+from UM.Mesh.MeshBuilder import MeshBuilder
+from UM.Resources import Resources
+from UM.Scene.Iterator.DepthFirstIterator import DepthFirstIterator
+from UM.View.GL.OpenGL import OpenGL
+from UM.View.Renderer import Renderer
+from UM.View.View import View
+from .BillboardDecorator import BillboardDecorator
 
 
 ##  The godview shows debug information about the scene and it's nodes.
@@ -42,6 +39,8 @@ class GodView(View):
                 if node.getMeshData():
                     renderer.queueNode(scene.getRoot(), mesh=self._getAxisMesh(node))
                     renderer.queueNode(node, shader = self._shader, transparent = True)
+                    if not node.callDecoration("getBillboard"):
+                        node.addDecorator(BillboardDecorator())
 
                 # We also want to draw the axis for group nodes.
                 if node.callDecoration("isGroup"):
