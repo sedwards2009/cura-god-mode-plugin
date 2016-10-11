@@ -1,5 +1,6 @@
 # Copyright (c) 2016 Ultimaker B.V.
 # Cura is released under the terms of the AGPLv3 or higher.
+from UM.Settings import DefinitionContainer
 from UM.Settings import SettingDefinition
 from UM.Extension import Extension
 from UM.Application import Application
@@ -323,8 +324,11 @@ def formatContainer(container, name="Container", short_value_properties=False, s
 def formatContainerMetaDataRows(def_container):
     html = ""
     html += formatKeyValueTableRow("<type>", type(def_container), extra_class="metadata")
+    html += formatKeyValueTableRow("<id>", def_container, extra_class="metadata")
     html += formatKeyValueTableRow("id", safeCall(def_container.getId), extra_class="metadata")
     html += formatKeyValueTableRow("name", safeCall(def_container.getName), extra_class="metadata")
+    if hasattr(def_container, "getDefinition"):
+        html += formatKeyValueTableRow("definition", safeCall(def_container.getDefinition), extra_class="metadata")
     html += formatKeyValueTableRow("read only", safeCall(def_container.isReadOnly), extra_class="metadata")
     html += formatKeyValueTableRow("path", safeCall(def_container.getPath), extra_class="metadata")
     html += formatKeyValueTableRow("metadata", safeCall(def_container.getMetaData), extra_class="metadata")
@@ -371,6 +375,8 @@ def formatKeyValueTableRow(key, value, extra_class=""):
     elif isinstance(value, dict):
         formatted_value = encode(json.dumps(value, sort_keys=True, indent=4))
         clazz += " preformat"
+    elif isinstance(value, DefinitionContainer):
+        formatted_value = encode(value.getId() + " " + str(value))
     else:
         formatted_value = encode(str(value))
 
