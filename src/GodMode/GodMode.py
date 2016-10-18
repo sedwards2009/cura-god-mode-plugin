@@ -166,6 +166,12 @@ tr.key_hide {
 body.hide_metadata tr.metadata {
   display: none;
 }
+
+ul.property_list {
+    list-style: none;
+    padding-left: 0;
+    margin-left: 0;
+}
 </style>
 </head>
 <body onload='initKeyFilter();'>
@@ -342,18 +348,18 @@ def formatSettingValue(container, key, properties=None):
     if properties is None:
         properties = setting_prop_names
 
-    value = ""
+    value = "<ul class=\"property_list\">\n"
     comma = ""
+    properties.sort()
     for prop_name in properties:
         prop_value = container.getProperty(key, prop_name)
         if prop_value is not None:
-            if isinstance(prop_value, SettingFunction):
-                formatted_value = "<SettingFunction at " + str(hex(id(prop_value))) + "> \"" + prop_value._code + '"'
-            else:
-                formatted_value = repr(prop_value)
-            value += comma + prop_name + ": " + formatted_value
-            comma = ", "
-    return value
+            value += "  <li>\n"
+            value += "    <strong>" + encode(prop_name) + ":</strong> " + encode(repr(prop_value))
+            value += "  </li>\n"
+    value += "</ul>\n"
+
+    return RawHtml(value)
 
 def safeCall(callable):
     try:
