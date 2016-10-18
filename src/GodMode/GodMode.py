@@ -168,9 +168,13 @@ body.hide_metadata tr.metadata {
 }
 
 ul.property_list {
-    list-style: none;
-    padding-left: 0;
-    margin-left: 0;
+  list-style: none;
+  padding-left: 0;
+  margin-left: 0;
+}
+
+span.prop_name {
+  font-weight: bold;
 }
 </style>
 </head>
@@ -355,7 +359,7 @@ def formatSettingValue(container, key, properties=None):
         prop_value = container.getProperty(key, prop_name)
         if prop_value is not None:
             value += "  <li>\n"
-            value += "    <strong>" + encode(prop_name) + ":</strong> " + encode(repr(prop_value))
+            value += "    <span class='prop_name'>" + encode(prop_name) + ":</span> " + encode(repr(prop_value))
             value += "  </li>\n"
     value += "</ul>\n"
 
