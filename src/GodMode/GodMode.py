@@ -2,6 +2,7 @@
 # Cura is released under the terms of the AGPLv3 or higher.
 from UM.Settings import DefinitionContainer
 from UM.Settings import SettingDefinition
+from UM.Settings.SettingFunction import SettingFunction
 from UM.Extension import Extension
 from UM.Application import Application
 from UM.Settings.ContainerRegistry import ContainerRegistry
@@ -311,6 +312,7 @@ def formatContainer(container, name="Container", short_value_properties=False, s
 
     if show_keys:
         key_properties = ["value", "resolve"] if short_value_properties else setting_prop_names
+        key_properties.sort()
 
         if hasattr(container, "getAllKeys"):
             keys = list(container.getAllKeys())
@@ -345,7 +347,11 @@ def formatSettingValue(container, key, properties=None):
     for prop_name in properties:
         prop_value = container.getProperty(key, prop_name)
         if prop_value is not None:
-            value += comma + prop_name + ": " + repr(prop_value)
+            if isinstance(prop_value, SettingFunction):
+                formatted_value = "<SettingFunction at " + str(hex(id(prop_value))) + "> \"" + prop_value._code + '"'
+            else:
+                formatted_value = repr(prop_value)
+            value += comma + prop_name + ": " + formatted_value
             comma = ", "
     return value
 
