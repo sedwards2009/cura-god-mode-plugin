@@ -66,6 +66,14 @@ class GodView(View):
                     # Render bounding box of this node
                     renderer.queueNode(scene.getRoot(), mesh=node.getBoundingBoxMesh(), mode=Renderer.RenderLines)
 
+                # We sometimes have nodes that are not groups, but have children. Also draw them
+                if not node.getMeshData() and len(node.getChildren()) != 0:
+                    # Render origin of this node.
+                    renderer.queueNode(scene.getRoot(), mesh=self._getAxisMesh(node))
+                    bounding_box = node.getBoundingBoxMesh()
+                    if bounding_box:
+                        renderer.queueNode(scene.getRoot(), mesh=bounding_box, mode=Renderer.RenderLines)
+
     def _matrixToHtml(self, matrix):
         data = re.sub('[\[\]]', '', numpy.array_str(matrix.getData()))
         data = data.replace("\n", "<br>")
