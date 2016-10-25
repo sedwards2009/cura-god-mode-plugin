@@ -70,9 +70,19 @@ class GodView(View):
                 if not node.getMeshData() and len(node.getChildren()) != 0:
                     # Render origin of this node.
                     renderer.queueNode(scene.getRoot(), mesh=self._getAxisMesh(node))
-                    bounding_box = node.getBoundingBoxMesh()
+
+                    bounding_box = node.getBoundingBox()
                     if bounding_box:
-                        renderer.queueNode(scene.getRoot(), mesh=bounding_box, mode=Renderer.RenderLines)
+                        mesh_builder = MeshBuilder()
+                        mesh_builder.addCube(
+                            width=bounding_box.width,
+                            height=bounding_box.height,
+                            depth=bounding_box.depth,
+                            center=bounding_box.center,
+                            color=Color(0.0, 0.0, 1.0, 1.0)
+                        )
+                        mesh = mesh_builder.build()
+                        renderer.queueNode(scene.getRoot(), mesh=mesh, mode=Renderer.RenderLines)
 
     def _matrixToHtml(self, matrix):
         data = re.sub('[\[\]]', '', numpy.array_str(matrix.getData()))
