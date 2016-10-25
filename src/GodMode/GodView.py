@@ -10,6 +10,10 @@ from UM.View.Renderer import Renderer
 from UM.View.View import View
 from .BillboardDecorator import BillboardDecorator
 
+import re
+
+import numpy
+
 
 ##  The godview shows debug information about the scene and it's nodes.
 class GodView(View):
@@ -39,14 +43,25 @@ class GodView(View):
                 if node.getMeshData():
                     renderer.queueNode(scene.getRoot(), mesh=self._getAxisMesh(node))
                     renderer.queueNode(node, shader = self._shader, transparent = True)
-                    if not node.callDecoration("getBillboard"):
-                        node.addDecorator(BillboardDecorator())
+                    billboard_node = node.callDecoration("getBillboard")
+                    if not billboard_node:
+                        billboard_decorator = BillboardDecorator()
+                        node.addDecorator(billboard_decorator)
+                        billboard_node = billboard_decorator.getBillboard()
+                        billboard_node.setTemplate("<html><H1>{name}</H1> {matrix}</html>")
+
+                    data = self._matrixToHtml(node.getWorldTransformation())
+                    billboard_node.setDisplayData({"name": node.getName(), "matrix": data})
 
                 # We also want to draw the axis for group nodes.
                 if node.callDecoration("isGroup"):
                     renderer.queueNode(scene.getRoot(), mesh=self._getAxisMesh(node))
                     renderer.queueNode(scene.getRoot(), mesh=node.getBoundingBoxMesh(), mode=Renderer.RenderLines)
 
+    def _matrixToHtml(self, matrix):
+        data = re.sub('[\[\]]', '', numpy.array_str(matrix.getData()))
+        data = data.replace("\n", "<br>")
+        return data
 
     def endRendering(self):
         pass
