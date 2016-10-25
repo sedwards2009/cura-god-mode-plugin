@@ -41,8 +41,13 @@ class GodView(View):
             if not node.render(renderer):
                 # For now we only render nodes that indicate that they need rendering.
                 if node.getMeshData():
-                    renderer.queueNode(scene.getRoot(), mesh=self._getAxisMesh(node))
+                    # Render origin of this node.
+                    renderer.queueNode(scene.getRoot(), mesh = self._getAxisMesh(node))
+
+                    # Render transparent MeshData
                     renderer.queueNode(node, shader = self._shader, transparent = True)
+
+                    # Check if node already has a billboard node. If not, add it.
                     billboard_node = node.callDecoration("getBillboard")
                     if not billboard_node:
                         billboard_decorator = BillboardDecorator()
@@ -50,12 +55,15 @@ class GodView(View):
                         billboard_node = billboard_decorator.getBillboard()
                         billboard_node.setTemplate("<html><H1>{name}</H1> {matrix}</html>")
 
+                    # Update the displayed data on the billboard.
                     data = self._matrixToHtml(node.getWorldTransformation())
                     billboard_node.setDisplayData({"name": node.getName(), "matrix": data})
 
-                # We also want to draw the axis for group nodes.
+                # Handle group nodes
                 if node.callDecoration("isGroup"):
+                    # Render origin of this node.
                     renderer.queueNode(scene.getRoot(), mesh=self._getAxisMesh(node))
+                    # Render bounding box of this node
                     renderer.queueNode(scene.getRoot(), mesh=node.getBoundingBoxMesh(), mode=Renderer.RenderLines)
 
     def _matrixToHtml(self, matrix):
