@@ -27,7 +27,7 @@ class GodView(View):
     def __init__(self):
         super().__init__()
         self._shader = None
-        self._billboard_template = "<html><H1>{name}</H1> <b>{matrix}<br>Depth: {depth} <br>Parent Name: {parent_name}<br>Has mesh:{has_mesh}</b></html>"
+        self._billboard_template = "<html><H1>{name}</H1> <b><p>{matrix}</p>Depth: {depth} <br>Parent Name: {parent_name}<br>Has mesh:{has_mesh}</b></html>"
 
     def beginRendering(self):
         # Convenience setup
@@ -102,8 +102,11 @@ class GodView(View):
         return billboard_node
 
     def _matrixToHtml(self, matrix):
-        data = re.sub('[\[\]]', '', numpy.array_str(matrix.getData()))
-        data = data.replace("\n", "<br>")
+        data = re.sub("[\[\]]", "", numpy.array_str(matrix.getData()))
+        data = data.lstrip(" ")  # Remove leading spaces
+        data = data.replace("  ", " ")  # remove double spaces
+        data = data.replace("\n ", "<br>")
+
         return data
 
     def endRendering(self):
