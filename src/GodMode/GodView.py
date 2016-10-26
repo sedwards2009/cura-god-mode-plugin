@@ -27,6 +27,7 @@ class GodView(View):
     def __init__(self):
         super().__init__()
         self._shader = None
+        self._billboard_template = "<html><H1>{name}</H1> <b>{matrix}<br>Depth: {depth} <br>Parent Name: {parent_name}<br>Has mesh:{has_mesh}</b></html>"
 
     def beginRendering(self):
         # Convenience setup
@@ -47,17 +48,11 @@ class GodView(View):
                     # Render transparent MeshData
                     renderer.queueNode(node, shader = self._shader, transparent = True)
 
-                    # Check if node already has a billboard node. If not, add it.
-                    billboard_node = node.callDecoration("getBillboard")
-                    if not billboard_node:
-                        billboard_decorator = BillboardDecorator()
-                        node.addDecorator(billboard_decorator)
-                        billboard_node = billboard_decorator.getBillboard()
-                        billboard_node.setTemplate("<html><H1>{name}</H1> <b>{matrix}<br>Depth: {depth} <br>Parent Name: {parent_name}</b></html>")
+                    billboard_node = self._ensureNodeHasBillboard(node)
 
                     # Update the displayed data on the billboard.
                     data = self._matrixToHtml(node.getWorldTransformation())
-                    billboard_node.setDisplayData({"name": node.getName(), "matrix": data, "depth": node.getDepth(), "parent_name": node.getParent().getName()})
+                    billboard_node.setDisplayData({"name": node.getName(), "matrix": data, "depth": node.getDepth(), "parent_name": node.getParent().getName(), "has_mesh": "True"})
 
                 # Handle group nodes
                 if node.callDecoration("isGroup"):
@@ -66,11 +61,24 @@ class GodView(View):
                     # Render bounding box of this node
                     renderer.queueNode(scene.getRoot(), mesh=node.getBoundingBoxMesh(), mode=Renderer.RenderLines)
 
+                    billboard_node = self._ensureNodeHasBillboard(node)
+
+                    # Update the displayed data on the billboard.
+                    data = self._matrixToHtml(node.getWorldTransformation())
+                    billboard_node.setDisplayData({"name": node.getName(), "matrix": data, "depth": node.getDepth(), "parent_name": node.getParent().getName(), "has_mesh": node.getMeshData() is not None})
+
+
                 # We sometimes have nodes that are not groups, but have children. Also draw them
                 if not node.getMeshData() and len(node.getChildren()) != 0:
                     # Render origin of this node.
                     renderer.queueNode(scene.getRoot(), mesh=self._getAxisMesh(node))
 
+                    billboard_node = self._ensureNodeHasBillboard(node)
+
+                    # Update the displayed data on the billboard.
+                    data = self._matrixToHtml(node.getWorldTransformation())
+                    parent_name = node.getParent().getName() if node.getParent() else ""
+                    billboard_node.setDisplayData({"name": node.getName(), "matrix": data, "depth": node.getDepth(), "parent_name": parent_name, "has_mesh": "False"})
                     bounding_box = node.getBoundingBox()
                     if bounding_box:
                         mesh_builder = MeshBuilder()
@@ -83,6 +91,15 @@ class GodView(View):
                         )
                         mesh = mesh_builder.build()
                         renderer.queueNode(scene.getRoot(), mesh=mesh, mode=Renderer.RenderLines)
+
+    def _ensureNodeHasBillboard(self, node):
+        billboard_node = node.callDecoration("getBillboard")
+        if not billboard_node:
+            billboard_decorator = BillboardDecorator()
+            node.addDecorator(billboard_decorator)
+            billboard_node = billboard_decorator.getBillboard()
+            billboard_node.setTemplate(self._billboard_template)
+        return billboard_node
 
     def _matrixToHtml(self, matrix):
         data = re.sub('[\[\]]', '', numpy.array_str(matrix.getData()))
