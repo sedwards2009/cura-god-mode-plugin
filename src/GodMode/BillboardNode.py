@@ -70,14 +70,12 @@ class BillboardNode(SceneNode):
             document = QTextDocument()
             document.setHtml(self._getFilledTemplate(self._display_data, self._template))
 
-            blarg = QImage(self._texture_width, self._texture_height, QImage.Format_ARGB32)
-            blarg.fill(Qt.white)
-            painter = QPainter(blarg)
+            texture_image = QImage(self._texture_width, self._texture_height, QImage.Format_ARGB32)
+            texture_image.fill(Qt.white)
+            painter = QPainter(texture_image)
             document.drawContents(painter, QRectF(0., 0., self._texture_width, self._texture_height))
             painter.end()
-            self._texture.setImage(blarg)
-
-            #self._texture.load(Resources.getPath(Resources.Images, "cura.png"))
+            self._texture.setImage(texture_image)
             self._shader.setTexture(0, self._texture)
 
         node_position = self._target_node.getPosition()
