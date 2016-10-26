@@ -85,6 +85,6 @@ class BillboardNode(SceneNode):
         position_matrix.setByTranslation(node_position)
         camera_orientation = self._scene.getActiveCamera().getOrientation().toMatrix()
 
-        renderer.queueNode(self._scene.getRoot(), shader=self._shader, transparent=True, mesh=self._billboard_mesh.getTransformed(position_matrix.multiply(camera_orientation)), sort=1)
+        renderer.queueNode(self._scene.getRoot(), shader=self._shader, transparent=True, mesh=self._billboard_mesh.getTransformed(position_matrix.multiply(camera_orientation)), sort=self._target_node.getDepth())
 
         return True  # This node does it's own rendering.
