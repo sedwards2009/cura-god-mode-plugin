@@ -58,7 +58,7 @@ class BillboardNode(SceneNode):
     def _getFilledTemplate(self, display_data, template):
         filled_template = template
         for entry in display_data:
-            filled_template = filled_template.replace("{%s}" % entry, display_data[entry])
+            filled_template = filled_template.replace("{%s}" % entry, str(display_data[entry]))
 
         return filled_template
 

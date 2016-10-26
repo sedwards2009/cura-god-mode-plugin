@@ -53,11 +53,11 @@ class GodView(View):
                         billboard_decorator = BillboardDecorator()
                         node.addDecorator(billboard_decorator)
                         billboard_node = billboard_decorator.getBillboard()
-                        billboard_node.setTemplate("<html><H1>{name}</H1> {matrix}</html>")
+                        billboard_node.setTemplate("<html><H1>{name}</H1> <b>{matrix}<br>Depth: {depth} <br>Parent Name: {parent_name}</b></html>")
 
                     # Update the displayed data on the billboard.
                     data = self._matrixToHtml(node.getWorldTransformation())
-                    billboard_node.setDisplayData({"name": node.getName(), "matrix": data})
+                    billboard_node.setDisplayData({"name": node.getName(), "matrix": data, "depth": node.getDepth(), "parent_name": node.getParent().getName()})
 
                 # Handle group nodes
                 if node.callDecoration("isGroup"):
