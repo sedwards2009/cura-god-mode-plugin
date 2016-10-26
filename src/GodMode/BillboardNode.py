@@ -78,7 +78,7 @@ class BillboardNode(SceneNode):
             self._texture.setImage(texture_image)
             self._shader.setTexture(0, self._texture)
 
-        node_position = self._target_node.getPosition()
+        node_position = self._target_node.getWorldPosition()
         position_matrix = Matrix()
         position_matrix.setByTranslation(node_position)
         camera_orientation = self._scene.getActiveCamera().getOrientation().toMatrix()
