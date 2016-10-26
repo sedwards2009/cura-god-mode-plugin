@@ -66,12 +66,14 @@ class BillboardNode(SceneNode):
         if not self._shader:
             # We now misuse the platform shader, as it actually supports textures
             self._shader = OpenGL.getInstance().createShaderProgram(Resources.getPath(Resources.Shaders, "platform.shader"))
+            # Set the opacity to 0, so that the template is in full control.
+            self._shader.setUniformValue("u_opacity", 0)
             self._texture = OpenGL.getInstance().createTexture()
             document = QTextDocument()
             document.setHtml(self._getFilledTemplate(self._display_data, self._template))
 
             texture_image = QImage(self._texture_width, self._texture_height, QImage.Format_ARGB32)
-            texture_image.fill(Qt.white)
+            texture_image.fill(Qt.transparent)
             painter = QPainter(texture_image)
             document.drawContents(painter, QRectF(0., 0., self._texture_width, self._texture_height))
             painter.end()
@@ -83,6 +85,6 @@ class BillboardNode(SceneNode):
         position_matrix.setByTranslation(node_position)
         camera_orientation = self._scene.getActiveCamera().getOrientation().toMatrix()
 
-        renderer.queueNode(self._scene.getRoot(), shader=self._shader, transparent=True, mesh=self._billboard_mesh.getTransformed(position_matrix.multiply(camera_orientation)), sort=-8)
+        renderer.queueNode(self._scene.getRoot(), shader=self._shader, transparent=True, mesh=self._billboard_mesh.getTransformed(position_matrix.multiply(camera_orientation)), sort=1)
 
         return True  # This node does it's own rendering.
