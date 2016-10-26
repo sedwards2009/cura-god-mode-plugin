@@ -17,9 +17,9 @@ import numpy
 
 ##  The godview shows debug information about the scene and it's nodes.
 class GodView(View):
-    XAxisColor = Color(1.0, 0.0, 0.0, 1.0)
-    YAxisColor = Color(0.0, 0.0, 1.0, 1.0)
-    ZAxisColor = Color(0.0, 1.0, 0.0, 1.0)
+    XAxisColor = Color(1.0, 0.0, 0.0, 0.5)
+    YAxisColor = Color(0.0, 0.0, 1.0, 0.5)
+    ZAxisColor = Color(0.0, 1.0, 0.0, 0.5)
 
     axis_width = 0.5
     axis_height = 20
@@ -43,7 +43,7 @@ class GodView(View):
                 # For now we only render nodes that indicate that they need rendering.
                 if node.getMeshData():
                     # Render origin of this node.
-                    renderer.queueNode(scene.getRoot(), mesh = self._getAxisMesh(node))
+                    renderer.queueNode(scene.getRoot(), mesh = self._getAxisMesh(node), transparent = True)
 
                     # Render transparent MeshData
                     renderer.queueNode(node, shader = self._shader, transparent = True)
@@ -57,7 +57,7 @@ class GodView(View):
                 # Handle group nodes
                 if node.callDecoration("isGroup"):
                     # Render origin of this node.
-                    renderer.queueNode(scene.getRoot(), mesh=self._getAxisMesh(node))
+                    renderer.queueNode(scene.getRoot(), mesh=self._getAxisMesh(node), transparent = True)
                     # Render bounding box of this node
                     renderer.queueNode(scene.getRoot(), mesh=node.getBoundingBoxMesh(), mode=Renderer.RenderLines)
 
@@ -71,7 +71,7 @@ class GodView(View):
                 # We sometimes have nodes that are not groups, but have children. Also draw them
                 if not node.getMeshData() and len(node.getChildren()) != 0:
                     # Render origin of this node.
-                    renderer.queueNode(scene.getRoot(), mesh=self._getAxisMesh(node))
+                    renderer.queueNode(scene.getRoot(), mesh=self._getAxisMesh(node), transparent = True)
 
                     billboard_node = self._ensureNodeHasBillboard(node)
 
