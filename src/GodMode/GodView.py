@@ -102,11 +102,10 @@ class GodView(View):
         return billboard_node
 
     def _matrixToHtml(self, matrix):
-        data = re.sub("[\[\]]", "", numpy.array_str(matrix.getData()))
+        data = re.sub("[\[\]]", "", numpy.array_str(matrix.getData(), precision = 4, suppress_small = True))
         data = data.lstrip(" ")  # Remove leading spaces
         data = data.replace("  ", " ")  # remove double spaces
         data = data.replace("\n ", "<br>")
-
         return data
 
     def endRendering(self):
