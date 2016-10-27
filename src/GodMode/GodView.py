@@ -67,9 +67,8 @@ class GodView(View):
                     data = self._matrixToHtml(node.getWorldTransformation())
                     billboard_node.setDisplayData({"name": node.getName(), "matrix": data, "depth": node.getDepth(), "parent_name": node.getParent().getName(), "has_mesh": node.getMeshData() is not None})
 
-
                 # We sometimes have nodes that are not groups, but have children. Also draw them
-                if not node.getMeshData() and len(node.getChildren()) != 0:
+                elif not node.getMeshData() and len(node.getChildren()) != 0:
                     # Render origin of this node.
                     renderer.queueNode(scene.getRoot(), mesh=self._getAxisMesh(node), transparent = True)
 
