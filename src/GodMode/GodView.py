@@ -51,7 +51,7 @@ class GodView(View):
                     billboard_node = self._ensureNodeHasBillboard(node)
 
                     # Update the displayed data on the billboard.
-                    data = self._matrixToHtml(node.getWorldTransformation())
+                    data = self._matrixToHtml(node.getLocalTransformation())
                     billboard_node.setDisplayData({"name": node.getName(), "matrix": data, "depth": node.getDepth(), "parent_name": node.getParent().getName(), "has_mesh": "True"})
 
                 # Handle group nodes
@@ -64,7 +64,7 @@ class GodView(View):
                     billboard_node = self._ensureNodeHasBillboard(node)
 
                     # Update the displayed data on the billboard.
-                    data = self._matrixToHtml(node.getWorldTransformation())
+                    data = self._matrixToHtml(node.getLocalTransformation())
                     billboard_node.setDisplayData({"name": node.getName(), "matrix": data, "depth": node.getDepth(), "parent_name": node.getParent().getName(), "has_mesh": node.getMeshData() is not None})
 
                 # We sometimes have nodes that are not groups, but have children. Also draw them
@@ -75,7 +75,7 @@ class GodView(View):
                     billboard_node = self._ensureNodeHasBillboard(node)
 
                     # Update the displayed data on the billboard.
-                    data = self._matrixToHtml(node.getWorldTransformation())
+                    data = self._matrixToHtml(node.getLocalTransformation())
                     parent_name = node.getParent().getName() if node.getParent() else ""
                     billboard_node.setDisplayData({"name": node.getName(), "matrix": data, "depth": node.getDepth(), "parent_name": parent_name, "has_mesh": "False"})
                     bounding_box = node.getBoundingBox()
