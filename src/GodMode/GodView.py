@@ -27,7 +27,7 @@ class GodView(View):
     def __init__(self):
         super().__init__()
         self._shader = None
-        self._billboard_template = "<html><H1>{name}</H1> <b><p>{matrix}</p>Depth: {depth} <br>Parent Name: {parent_name}<br>Has mesh:{has_mesh}</b></html>"
+        self._billboard_template = "<html><H2>{name}</H2> <b><p>{matrix}</p>Depth: {depth} <br>Parent Name: {parent_name}<br>Has mesh:{has_mesh}</b></html>"
 
     def beginRendering(self):
         # Convenience setup
