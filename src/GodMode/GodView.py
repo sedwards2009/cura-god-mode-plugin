@@ -9,6 +9,7 @@ from UM.View.GL.OpenGL import OpenGL
 from UM.View.Renderer import Renderer
 from UM.View.View import View
 from .BillboardDecorator import BillboardDecorator
+from UM.Event import Event
 
 import re
 
@@ -109,6 +110,13 @@ class GodView(View):
 
     def endRendering(self):
         pass
+
+    def event(self, event):
+        # If the view is deactivated, remove all the billboard decorators again.
+        if event.type == Event.ViewDeactivateEvent:
+            scene = self.getController().getScene()
+            for node in DepthFirstIterator(scene.getRoot()):
+                node.removeDecorator(BillboardDecorator)
 
     def _getAxisMesh(self, node):
         mb = MeshBuilder()
