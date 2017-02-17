@@ -1,7 +1,7 @@
 # Copyright (c) 2016 Ultimaker B.V.
 # Cura is released under the terms of the AGPLv3 or higher.
 from UM.Settings import DefinitionContainer
-from UM.Settings import SettingDefinition
+from UM.Settings.SettingDefinition import SettingDefinition
 from UM.Settings.SettingFunction import SettingFunction
 from UM.Extension import Extension
 from UM.Application import Application
