@@ -1,6 +1,6 @@
 # Copyright (c) 2016 Ultimaker B.V.
 # Cura is released under the terms of the AGPLv3 or higher.
-from UM.Settings import DefinitionContainer
+from UM.Settings.DefinitionContainer import DefinitionContainer
 from UM.Settings.SettingDefinition import SettingDefinition
 from UM.Extension import Extension
 from UM.Application import Application
@@ -14,7 +14,7 @@ import tempfile
 import html
 import json
 
-from cura.Settings import ExtruderManager
+from cura.Settings.ExtruderManager import ExtruderManager
 
 encode = html.escape
 
