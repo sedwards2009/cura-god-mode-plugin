@@ -12,7 +12,7 @@ class BillboardDecorator(SceneNodeDecorator):
     def setNode(self, node):
         super().setNode(node)
         # Create a new billboard node.
-        self._billboard = BillboardNode(self._node, parent = UM.Application.getInstance().getController().getScene().getRoot())
+        self._billboard = BillboardNode(self._node, parent = UM.Application.Application.getInstance().getController().getScene().getRoot())
 
     def clear(self):
         if self._billboard:
