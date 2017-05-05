@@ -339,8 +339,8 @@ def formatContainerMetaDataRows(def_container):
         html += formatKeyValueTableRow("<id>", def_container, extra_class="metadata")
         html += formatKeyValueTableRow("id", safeCall(def_container.getId), extra_class="metadata")
         html += formatKeyValueTableRow("name", safeCall(def_container.getName), extra_class="metadata")
-        if hasattr(def_container, "getDefinition"):
-            html += formatKeyValueTableRow("definition", safeCall(def_container.getDefinition), extra_class="metadata")
+        if hasattr(def_container, "_getDefinition"):
+            html += formatKeyValueTableRow("definition", safeCall(def_container._getDefinition), extra_class="metadata")
         html += formatKeyValueTableRow("read only", safeCall(def_container.isReadOnly), extra_class="metadata")
         html += formatKeyValueTableRow("path", safeCall(def_container.getPath), extra_class="metadata")
         html += formatKeyValueTableRow("metadata", safeCall(def_container.getMetaData), extra_class="metadata")
