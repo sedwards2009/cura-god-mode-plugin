@@ -11,7 +11,7 @@ def getMetaData():
     return {
         "view": {
             "name": "GodView",
-            "weight": 0
+            "weight": 1
         }
     }
 
