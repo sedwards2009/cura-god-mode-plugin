@@ -14,8 +14,6 @@ import tempfile
 import html
 import json
 
-from cura.Settings.ExtruderManager import ExtruderManager
-
 encode = html.escape
 
 class GodMode(Extension, QObject):
@@ -256,19 +254,20 @@ def allStacksHtmlPage():
 def formatExtruderStacks():
     html = ""
     html += "<h2 id='extruder_stacks'>Extruder Stacks</h2>"
-    for i in range(ExtruderManager.getInstance().extruderCount):
-        html += "<h3 id='extruder_index_" + str(i) + "'>Index " + str(i) + "</h3>"
-        extruder_stack = ExtruderManager.getInstance().getExtruderStack(i)
+    machine = Application.getInstance().getMachineManager().activeMachine
+    for position, extruder_stack in sorted([(int(p), es) for p, es in machine.extruders.items()]):
+        position = str(position)
+        html += "<h3 id='extruder_index_" + position + "'>Index " + position + "</h3>"
         html += formatContainerStack(extruder_stack)
     return html
 
 def formatExtruderStacksMenu():
     html = ""
     html += "<ul>"
-    for i in range(ExtruderManager.getInstance().extruderCount):
+    machine = Application.getInstance().getMachineManager().activeMachine
+    for position, extruder_stack in sorted([(int(p), es) for p, es in machine.extruders.items()]):
         html += "<li>"
-        html += "<a href='#extruder_index_" + str(i) + "'>Index " + str(i) + "</a>\n"
-        extruder_stack = ExtruderManager.getInstance().getExtruderStack(i)
+        html += "<a href='#extruder_index_" + str(position) + "'>Index " + str(position) + "</a>\n"
         html += formatContainerStackMenu(extruder_stack)
         html += "</li>"
     html += "</ul>"
