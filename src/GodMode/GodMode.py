@@ -56,7 +56,7 @@ def viewAllStacks():
 
 def openHtmlPage(page_name, html_contents):
     target = os.path.join(tempfile.gettempdir(), page_name)
-    with open(target, "w", encoding="utf8") as fhandle:
+    with open(target, "w", encoding="utf-8") as fhandle:
         fhandle.write(html_contents)
     QDesktopServices.openUrl(QUrl.fromLocalFile(target))
 
