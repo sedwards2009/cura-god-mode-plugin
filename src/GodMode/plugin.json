@@ -3,5 +3,6 @@
     "author": "Ultimaker",
     "version": "1.0",
     "description": "Dump the contents of all settings to a HTML file.",
-    "api": "7.0"
+    "api": "7.0",
+    "supported_sdk_versions": ["7.0.0", "8.0.0"]
 }

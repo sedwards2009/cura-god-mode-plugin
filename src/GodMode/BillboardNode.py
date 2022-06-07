@@ -13,8 +13,12 @@ from UM.Math.Matrix import Matrix
 
 from UM.Application import Application
 
-from PyQt5.QtGui import QImage, QPainter, QColor, QFont, QTextDocument
-from PyQt5.QtCore import Qt, QRectF
+try:
+    from PyQt6.QtGui import QImage, QPainter, QColor, QFont, QTextDocument
+    from PyQt6.QtCore import Qt, QRectF
+except:
+    from PyQt5.QtGui import QImage, QPainter, QColor, QFont, QTextDocument
+    from PyQt5.QtCore import Qt, QRectF
 
 class BillboardNode(SceneNode):
     def __init__(self, node, parent=None):

@@ -6,8 +6,12 @@ from UM.Extension import Extension
 from UM.Application import Application
 from UM.Settings.ContainerRegistry import ContainerRegistry
 
-from PyQt5.QtCore import QObject, QUrl
-from PyQt5.QtGui import QDesktopServices
+try:
+    from PyQt6.QtCore import QObject, QUrl
+    from PyQt6.QtGui import QDesktopServices
+except:
+    from PyQt5.QtCore import QObject, QUrl
+    from PyQt5.QtGui import QDesktopServices
 
 import os.path
 import tempfile
@@ -255,7 +259,7 @@ def formatExtruderStacks():
     html = ""
     html += "<h2 id='extruder_stacks'>Extruder Stacks</h2>"
     machine = Application.getInstance().getMachineManager().activeMachine
-    for position, extruder_stack in sorted([(int(p), es) for p, es in machine.extruders.items()]):
+    for position, extruder_stack in sorted([(int(p + 1), es) for p, es in enumerate(machine.extruderList)]):
         position = str(position)
         html += "<h3 id='extruder_index_" + position + "'>Index " + position + "</h3>"
         html += formatContainerStack(extruder_stack)
@@ -265,7 +269,7 @@ def formatExtruderStacksMenu():
     html = ""
     html += "<ul>"
     machine = Application.getInstance().getMachineManager().activeMachine
-    for position, extruder_stack in sorted([(int(p), es) for p, es in machine.extruders.items()]):
+    for position, extruder_stack in sorted([(int(p + 1), es) for p, es in enumerate(machine.extruderList)]):
         html += "<li>"
         html += "<a href='#extruder_index_" + str(position) + "'>Index " + str(position) + "</a>\n"
         html += formatContainerStackMenu(extruder_stack)
